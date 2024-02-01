@@ -2,7 +2,7 @@ const express = require('express')
 
 const router = express.Router()
 
-const coursesControllers = require('../controllers/Courses')
+const coursesControllers = require('../controllers/courses')
 
 router.get('/', coursesControllers.getAll)
 router.get('/:id', coursesControllers.getById)

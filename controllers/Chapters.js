@@ -1,5 +1,5 @@
-const Chapter = require('../models/Chapters')
-const Courses = require('../models/Courses')
+const Chapter = require('../models/chapters')
+const Courses = require('../models/courses')
 
 const getAll = async (req,res) => {
     try {
@@ -14,7 +14,7 @@ const getAll = async (req,res) => {
         res.status(200).json(chapters);
       } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -94,7 +94,7 @@ const create = async (req, res) => {
         res.status(201).json(newChapter);
       } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: error.message });
       }
 }
 
