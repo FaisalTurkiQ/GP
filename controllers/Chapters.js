@@ -1,5 +1,9 @@
 const Chapter = require('../models/chapters')
 const Courses = require('../models/courses')
+const mongoose = require('mongoose')
+
+// For PDF
+const pdfParse = require('pdf-parse');
 
 const getAll = async (req,res) => {
     try {
@@ -74,29 +78,50 @@ const update = async (req, res) => {
 
 
 const create = async (req, res) => {
-    try {
-        const { title, content } = req.body;
+  try {
+    const courseId = req.params.courseId;
+
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ error: 'Invalid course ID format' });
+    }
+    const course = await Courses.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    if (!req.file) {
+      return res.status(400).send('No PDF file uploaded.');
+    }
+
+    const pdfBuffer = req.file.buffer;
+    const pdfData = pdfBuffer.toString('utf8');
     
-        const course = await Courses.findById(req.params.courseId);
-    
-        if (!course) {
-          return res.status(404).json({ error: 'Course not found' });
-        }
-    
-        const newChapter = new Chapter({ title, content });
-    
-        await newChapter.save();
-    
-        course.chapters.push(newChapter);
-    
-        await course.save();
-    
-        res.status(201).json(newChapter);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-      }
-}
+    const data = await pdfParse(pdfBuffer);
+
+    const newChapter = await createChapter(req.body.title, data.text);
+
+    course.chapters.push(newChapter);
+    await course.save();
+
+    res.status(201).json(newChapter);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const createChapter = async (title, content) => {
+  const chapter = {
+    title: title,
+    content: content,
+  };
+
+  const newChapter = new Chapter(chapter);
+  await newChapter.save();
+
+  return newChapter;
+};
 
 const deleteByID = async (req, res) => {
     try {
