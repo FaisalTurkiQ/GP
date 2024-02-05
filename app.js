@@ -1,7 +1,24 @@
 const express = require("express"); 
+
+
 require('dotenv').config();
 const app = express(); 
 const db = require('./config/db');
+
+
+
+//passport init
+const User = require('./models/user');
+const passport = require('passport');
+const localStrategy = require('passport-local');
+// app.use(session(sessionConfig));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()))
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+// 
+
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
