@@ -13,8 +13,8 @@ app.use("/courses",coursesRouter)
 const chaptersRouter = require("./routers/chapters");
 app.use("/chapters",chaptersRouter)
 
-const testsRouter = require("./routers/tests");
-app.use("/tests",testsRouter)
+const testsRouter = require("./routers/quizzes");
+app.use("/quizzes",testsRouter)
 
 app.listen(process.env.PORT, () => { 
     console.log(`API is listening on port ${process.env.PORT}`); 
