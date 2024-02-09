@@ -11,7 +11,11 @@ const session = require('express-session');
 const User = require('./models/users');
 const passport = require('passport');
 const localStrategy = require('passport-local');
-app.use(session({secret:'123',saveUninitialized: true, cookie: {secure:true}}));
+app.use(session({
+    secret: 'LongLiveTheKing',
+    resave: true,
+    saveUninitialized: true
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new localStrategy(User.authenticate()))
