@@ -1,4 +1,4 @@
-const { User, Student } = require('../models/users');
+const User = require('../models/users');
 
 const createUser = async (req, res) => {
   try {
@@ -92,7 +92,6 @@ const deleteStudentById = async (req, res) => {
 
 const register = async(req,res, next) =>{
   const {email, username, password } = req.body;
-  console.log(email,username, password);
   const user = new User({email, username})
   const registeredUser = await User.register(user,password)
   req.login(registeredUser, err => {
