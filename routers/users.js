@@ -1,17 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/users');
+const User = require('../models/users');
+
 
 // User Routes
-router.post('/users', userController.createUser);
-router.get('/users/:id', userController.getUserById);
-router.put('/users/:id', userController.updateUserById);
-router.delete('/users/:id', userController.deleteUserById);
+router.post('/', userController.createUser);
+router.get('/:id', userController.getUserById);
+router.put('/:id', userController.updateUserById);
+router.delete('/:id', userController.deleteUserById);
+router.post('/register', userController.register)
 
-// Student Routes
-router.post('/students', userController.createStudent);
-router.get('/students/:id', userController.getStudentById);
-router.put('/students/:id', userController.updateStudentById);
-router.delete('/students/:id', userController.deleteStudentById);
+m = require('../middlewares/isLoggedIn');
+
+router.post('/login', m.isLoggedIn, (req,res) => {
+    res.json({"Yes": true})
+})
 
 module.exports = router;
