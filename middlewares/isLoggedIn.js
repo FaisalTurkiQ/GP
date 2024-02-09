@@ -1,6 +1,6 @@
 const isLoggedIn = (req, res, next) => {
     console.log(req.isAuthenticated());
-    if (!req.isAuthenticated()) {
+    if (req.isAuthenticated()) {
         console.log('error', 'You must be signed in');
         const responseHeaders = res.getHeaders();
         console.log('Response Headers:', responseHeaders);

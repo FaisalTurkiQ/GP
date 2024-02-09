@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/users');
 const User = require('../models/users');
+const passport = require('passport');
 
 
 // User Routes
@@ -13,7 +14,7 @@ router.post('/register', userController.register)
 
 m = require('../middlewares/isLoggedIn');
 
-router.post('/login', m.isLoggedIn, (req,res) => {
+router.post('/login', passport.authenticate('local'), (req,res) => {
     res.json({"Yes": true})
 })
 
