@@ -1,16 +1,5 @@
 const User = require('../models/users');
 
-const createUser = async (req, res) => {
-  try {
-    const newUser = new User(req.body);
-    await newUser.save();
-    res.status(201).json({ message: 'User created successfully', user: newUser });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
-
 const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -26,8 +15,8 @@ const getUserById = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   try {
-    await User.findByIdAndUpdate(req.params.id, req.body);
-    res.status(200).json({ message: 'User updated successfully', user: req.body });
+    const user = await User.findByIdAndUpdate(req.params.id, req.body);
+    res.status(200).json({ message: 'User updated successfully', user: user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
@@ -44,73 +33,60 @@ const deleteUserById = async (req, res) => {
   }
 };
 
-// Student Controller Functions
+const register = async(req, res, next) => {
+  const { email, username, password } = req.body;
 
-const createStudent = async (req, res) => {
-  try {
-    const newStudent = new Student(req.body);
-    await newStudent.save();
-    res.status(201).json({ message: 'Student created successfully', student: newStudent });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
+  // Check if email is already registered
+  const checkUserEmail = await User.findOne({ email: email });
+  if (checkUserEmail) {
+    return res.status(400).json({ message: `Email ${email} is already registered.` });
   }
-};
 
-const getStudentById = async (req, res) => {
-  try {
-    const student = await Student.findById(req.params.id).populate('courses');
-    if (!student) {
-      return res.status(404).json({ error: 'Student not found' });
-    }
-    res.status(200).json(student);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
+  // Check if username is already taken
+  const checkUserName = await User.findOne({ username: username });
+  if (checkUserName) {
+    return res.status(400).json({ message: `Username ${username} is already registered.` });
   }
-};
 
-const updateStudentById = async (req, res) => {
   try {
-    await Student.findByIdAndUpdate(req.params.id, req.body);
-    res.status(200).json({ message: 'Student updated successfully', student: req.body });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
+    const user = new User({ email, username });
 
-const deleteStudentById = async (req, res) => {
-  try {
-    await Student.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: 'Student deleted successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
+    // Register the user
+    const registeredUser = await User.register(user, password);
 
-const register = async(req,res, next) =>{
-  const {email, username, password } = req.body;
-  const user = new User({email, username})
-  const registeredUser = await User.register(user,password)
-  req.login(registeredUser, err => {
-      if(err){
-          return next(err);
+    // Login the user after registration
+    req.login(registeredUser, err => {
+      if (err) {
+        return next(err);
       }
-  })
-  res.json(registeredUser);
-}
+      return res.json({ message: "Registration and login successful.", user: registeredUser });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error during registration." });
+  }
+};
+
+
+const login = (req, res) => {
+  // Assuming req.user is populated by Passport.js upon successful authentication
+  if (req.user) {
+    const user = req.user;
+    res.json({ 
+      message: "Login successful",
+      user: user
+    });
+  } else {
+    // This should technically never happen if this route is hit after successful authentication
+    res.status(401).json({ error: "Authentication failed" });
+  }
+};
 
 
 module.exports = {
-  createUser,
   getUserById,
   updateUserById,
   deleteUserById,
-  createStudent,
-  getStudentById,
-  updateStudentById,
-  deleteStudentById,
-  register
+  register,
+  login
 };

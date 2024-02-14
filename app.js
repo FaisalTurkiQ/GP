@@ -1,49 +1,35 @@
-const express = require("express"); 
-
-
+const express = require("express");
 require('dotenv').config();
-const app = express(); 
-const db = require('./config/db');
+const app = express();
+const passport = require('passport');
 const session = require('express-session');
 
+// Database configuration
+require('./config/db');
 
-//passport init
-const User = require('./models/users');
-const passport = require('passport');
-const localStrategy = require('passport-local');
+// Session setup
 app.use(session({
-    secret: 'LongLiveTheKing',
+    secret: process.env.SESSION_SECRET || 'YourSessionSecret',
     resave: true,
     saveUninitialized: true
 }));
+
+// Passport configuration
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new localStrategy(User.authenticate()))
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-// 
+require('./config/passport-config')(passport);
 
+// Body parser middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+const isLoggedIn = require('./middlewares/isAuthenticated');
+// Routers
+app.use("/users", require("./routers/users"));
+app.use("/courses",isLoggedIn, require("./routers/courses"));
+app.use("/chapters",isLoggedIn, require("./routers/chapters"));
 
-app.get("/",(req,res)=>{
-    res.json({success:"success"})
-})
-
-const usersRouter = require("./routers/users");
-app.use("/users",usersRouter)
-
-const coursesRouter = require("./routers/courses");
-app.use("/courses",coursesRouter)
-
-const chaptersRouter = require("./routers/chapters");
-app.use("/chapters",chaptersRouter)
-
-const testsRouter = require("./routers/quizzes");
-app.use("/quizzes",testsRouter)
-
-app.listen(process.env.PORT, () => { 
-    console.log(`API is listening on port ${process.env.PORT}`); 
+// Server listening
+app.listen(process.env.PORT, () => {
+    console.log(`API is listening on port ${process.env.PORT}`);
 });
