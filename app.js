@@ -4,6 +4,19 @@ const app = express();
 const passport = require('passport');
 const session = require('express-session');
 
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDefinition = require('./config/swaggerConfig');
+
+  
+const options = {
+  swaggerDefinition,
+  apis: ['./routers/*.js'], // Adjust the path to wherever your route files are located
+};
+const swaggerSpec = swaggerJSDoc(options);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
 // Database configuration
 require('./config/db');
 
