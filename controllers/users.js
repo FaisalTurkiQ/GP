@@ -67,6 +67,7 @@ const register = async(req, res, next) => {
   }
 };
 
+const sendEmail = require('../utils/email');
 
 const login = (req, res) => {
   // Assuming req.user is populated by Passport.js upon successful authentication
@@ -76,6 +77,12 @@ const login = (req, res) => {
       message: "Login successful",
       user: user
     });
+    // const now = new Date();
+    // sendEmail({
+    //   email: user.email,
+    //   subject : "Login successful",
+    //   text : `Login successful at ${now.toString()}`,
+    // })
   } else {
     // This should technically never happen if this route is hit after successful authentication
     res.status(401).json({ error: "Authentication failed" });

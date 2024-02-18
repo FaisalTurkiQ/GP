@@ -2,9 +2,9 @@ const Chapter = require('../models/chapters')
 const Courses = require('../models/courses')
 const { OpenAI } = require('openai');
 const openai = new OpenAI({ key: process.env.OPENAI_API_KEY });
-
 // For PDF
 const pdfParse = require('pdf-parse');
+const estimateTokenCount = require('../utils/estimateTokenCount')
 
 const getAll = async (req, res) => {
   try {
@@ -73,7 +73,7 @@ const create = async (req, res) => {
     course.chapters.push(newChapter._id);
     await course.save();
 
-    res.status(201).json(newChapter);
+    res.status(201).json({newChapter,token:estimateTokenCount(data.text)});
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
@@ -184,7 +184,7 @@ const generateSummary = async (req, res) => {
     // Next, call the OpenAI API as before but using chapter details
     const response = await openai.chat.completions.create({
       model: "gpt-4",
-      max_tokens: 6000,
+      max_tokens: 1000,
       messages: [
         // Setting the context for the AI, replacing [Example] with the actual course title
         {"role": "system", "content": `You are an instructor tasked with summarizing each chapter of the ${courseTitle} course. Your approach should be guided by the 20/80 rule, focusing on the most critical 20% of the content that will give students 80% of the required understanding.`},
@@ -193,7 +193,7 @@ const generateSummary = async (req, res) => {
         {"role": "user", "content": `Review the content provided for the "${chapterTitle}" chapter of the ${courseTitle} course. Understand the key concepts, principles, and examples presented. Identify the core elements that are essential to understanding ${courseTitle}, and develop a concise summary covering the most crucial concepts and principles along with key examples or applications. Ensure the summary captures the most impactful 20% of the content, providing a comprehensive understanding sufficient for 80% of typical use cases or applications in ${courseTitle}. The chapter content is as follows: ${chapterContent}`},
         
         // Clarification on the format of the response
-        {"role": "system", "content": "The response should be a concise summary in plain text, focusing on clarity and relevance to the course's learning objectives. Organize the summary in a structured manner, corresponding to the layout and progression of the chapter."}
+        {"role": "system", "content": "The response should be a concise summary in plain text, focusing on clarity and relevance to the course's learning objectives. Organize the summary in a structured manner, corresponding to the layout and progression of the chapter."},
       ]
     });
 

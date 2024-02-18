@@ -8,6 +8,11 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDefinition = require('./config/swaggerConfig');
 
+
+const morgan = require('morgan');
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
   
 const options = {
   swaggerDefinition,
@@ -16,13 +21,9 @@ const options = {
 const swaggerSpec = swaggerJSDoc(options);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-
-// Database configuration
-require('./config/db');
-
 // Session setup
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'YourSessionSecret',
+    secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true
 }));
@@ -36,13 +37,13 @@ require('./config/passport-config')(passport);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// login middleware
 const isLoggedIn = require('./middlewares/isAuthenticated');
+
 // Routers
 app.use("/users", require("./routers/users"));
 app.use("/courses",isLoggedIn, require("./routers/courses"));
 app.use("/chapters",isLoggedIn, require("./routers/chapters"));
 
-// Server listening
-app.listen(process.env.PORT, () => {
-    console.log(`API is listening on port ${process.env.PORT}`);
-});
+
+module.exports = app;

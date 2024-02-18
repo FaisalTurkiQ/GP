@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js"
   },
   "keywords": [],
   "author": "",
@@ -16,12 +17,15 @@
     "axios": "^1.6.7",
     "body-parser": "^1.20.2",
     "chatgpt": "^5.2.5",
+    "connect-rid": "^0.0.1",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
     "express-session": "^1.18.0",
     "mongodb": "^6.3.0",
     "mongoose": "^8.1.1",
+    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.9",
     "ocr-space-api-wrapper": "^2.3.0",
     "openai": "^4.27.0",
     "passport": "^0.7.0",
@@ -31,6 +35,7 @@
     "readline-sync": "^1.4.10",
     "swagger-autogen": "^2.23.7",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "validator": "^13.11.0"
   }
 }
