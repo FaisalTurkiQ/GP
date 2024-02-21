@@ -8,6 +8,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDefinition = require('./config/swaggerConfig');
 
+const cors = require('cors');
 
 const morgan = require('morgan');
 if (process.env.NODE_ENV === 'development') {
@@ -20,6 +21,10 @@ const options = {
 };
 const swaggerSpec = swaggerJSDoc(options);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// to allow Origin
+// app.use(cors({
+//   origin: 'api.GP.com'
+// }))
 
 // Session setup
 app.use(session({
