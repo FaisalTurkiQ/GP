@@ -50,5 +50,7 @@ app.use("/users", require("./routers/users"));
 app.use("/courses",isLoggedIn, require("./routers/courses"));
 app.use("/chapters",isLoggedIn, require("./routers/chapters"));
 
-
+app.get('/',(req,res)=>{
+  res.json({"message":"API is Work"})
+})
 module.exports = app;
