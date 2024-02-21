@@ -22,9 +22,9 @@ const options = {
 const swaggerSpec = swaggerJSDoc(options);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // to allow Origin
-// app.use(cors({
-//   origin: 'api.GP.com'
-// }))
+app.use(cors({
+  origin: 'https://g-project-ae56e53e4f20.herokuapp.com'
+}))
 
 // Session setup
 app.use(session({
