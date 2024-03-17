@@ -12,6 +12,6 @@ function estimateTokenCount(text) {
     });
   
     return tokenCount;
-  }
+}
 
 module.exports = estimateTokenCount

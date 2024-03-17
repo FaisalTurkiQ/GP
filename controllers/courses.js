@@ -1,19 +1,17 @@
 const Courses = require('../models/courses');
 
-// Get all courses for the logged-in user
 const getAll = async (req, res) => {
   try {
     const userId = req.user._id;
     const courses = await Courses.find({ userId: userId });
 
-    res.status(200).json(courses);
+    res.status(200).json({'courses':courses});
   } catch (err) {
     console.error(err);
     res.status(500).json({ 'error': err.message });
   }
 };
 
-// Get a single course by ID, ensuring it belongs to the logged-in user
 const getById = async (req, res) => {
   try {
     const courseId = req.params.id;
@@ -24,14 +22,13 @@ const getById = async (req, res) => {
       return res.status(404).json({ 'error': 'Course not found or access denied' });
     }
 
-    res.status(200).json(course);
+    res.status(200).json({'course':course});
   } catch (err) {
     console.error(err);
     res.status(500).json({ 'error': err.message });
   }
 };
 
-// Update a course, ensuring it belongs to the logged-in user
 const update = async (req, res) => {
   try {
     const courseId = req.params.id;
@@ -40,7 +37,7 @@ const update = async (req, res) => {
     const updatedCourse = await Courses.findOneAndUpdate(
       { _id: courseId, userId: userId },
       req.body,
-      { new: true, runValidators: true }
+      { new: true}
     );
 
     if (!updatedCourse) {
@@ -54,7 +51,6 @@ const update = async (req, res) => {
   }
 };
 
-// Delete a course, ensuring it belongs to the logged-in user
 const deleteByID = async (req, res) => {
   try {
     const courseId = req.params.id;
@@ -68,11 +64,10 @@ const deleteByID = async (req, res) => {
     res.status(200).json({ 'message': 'Course deleted successfully' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ 'error': err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
-// Create a new course and associate it with the logged-in user
 const create = async (req, res) => {
   try {
     const userId = req.user._id;
