@@ -9,6 +9,13 @@ require('./config/db');
 const morgan = require('morgan');
 app.use(morgan('dev'))
 
+
+const cors = require('cors');
+app.use(cors({
+  origin: 'http://localhost:3001'
+}));
+
+
 // Session setup
 app.use(session({
     secret: process.env.SESSION_SECRET,
